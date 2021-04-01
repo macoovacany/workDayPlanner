@@ -1,0 +1,56 @@
+:root {
+    --past: #A0A0A0;
+    --present: #ffcf4d;
+    --future: #00C000;
+}
+
+main {
+    max-width: 600px;
+    align-self: auto;
+}
+
+#times {
+    /* display: block;
+    border-style: solid;
+    border-radius: 20px;
+    border-width: medium; */
+}
+
+.time-block {
+    border-style: solid;
+    border-width: 0.1em;
+    border-radius: 15px;
+    height: 50px;
+}
+
+.time-block span {
+    height: 100%;
+    vertical-align: top;
+    min-width: 20%
+}
+
+.time-block input {
+    background-color: var(--future);
+    color: rebeccapurple;
+    height: 100%;
+    vertical-align: top;
+    width: 70%;
+}
+
+.time-block button {
+    /* background-color: none;
+    height: 100%;
+    min-width: 10%;
+    float: right; */
+    background-color: transparent;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: right;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    /* float:right;n */
+}
