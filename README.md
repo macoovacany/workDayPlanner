@@ -12,6 +12,8 @@
     1. handles resizing
     1. Get Header and time displayed
         1. sticky the time display?
+        1. fix the timezone to use locale instead of $d.
+        1. format the date nicely.
     1. time-blocks 
         1. time stamp 
             1. font

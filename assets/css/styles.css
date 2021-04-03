@@ -4,6 +4,25 @@
     --future: #00C000;
 }
 
+
+/* header */
+
+header {
+    text-align: center;
+}
+
+header h1 {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: large;
+}
+
+#time-display {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+/* main */
+
 main {
     max-width: 600px;
     align-self: auto;
