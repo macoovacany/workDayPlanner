@@ -28,35 +28,24 @@ main {
     align-self: auto;
 }
 
-#times {
-    /* display: block;
-    border-style: solid;
-    border-radius: 20px;
-    border-width: medium; */
-}
-
-.time-block {
+.time-blocks-form {
     border-style: solid;
     border-width: 0.1em;
     border-radius: 15px;
     height: 50px;
 }
 
-.time-block span {
-    height: 100%;
-    vertical-align: top;
-    min-width: 20%
-}
-
-.time-block input {
+.time-blocks-form textarea {
     background-color: var(--future);
     color: rebeccapurple;
     height: 100%;
     vertical-align: top;
     width: 70%;
+    font-family: 'Times New Roman', Times, serif;
+    resize: none;
 }
 
-.time-block button {
+.time-blocks-form button {
     /* background-color: none;
     height: 100%;
     min-width: 10%;
