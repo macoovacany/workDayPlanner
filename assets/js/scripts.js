@@ -1,7 +1,7 @@
 // global variables 
 const timeSections = ['8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm'];
 const TIME_FORMAT = "YYYY-M-D HH:mm:ss";
-
+var workPlannerData = {};
 
 // *************************
 // html entities to reference
@@ -58,26 +58,28 @@ const makeAllTimeBlockForms = function() {
 // *************************
 
 // workPlannerData
-const newWorkPlannerData = function() {
+const newWPD = function() {
     timeSections.forEach((tb) => {
         workPlannerData[tb] = "";
-        return workPlannerData;
     });
 };
 
-const loadWorkPlannerData = function() {
-    return JSON.parse(localStorage.get("workPlannerData"));
+const loadWPD = function() {
+    workPlannerData = JSON.parse(localStorage.get("workPlannerData"));
 }
 
-const saveWorkPlannerData = function(workPlannerData) {
+const saveWPD = function() {
     localStorage.set("workPlannerData", JSON.stringify(workPlannerData));
 }
 
-// lastUpdated
 
-
-
-
+// add textarea data to a specific workPlannerData 
+const updateWPDfromHTML = function() {
+    timeSections.forEach((tb) => {
+        let txtar = document.getElementById(`${tb}-text`);
+        workPlannerData[tb] = txtar.value;
+    });
+}
 
 
 
@@ -87,25 +89,24 @@ const saveWorkPlannerData = function(workPlannerData) {
 const updateTimeBlocks = function() {
 
     // set the text in the timeblock
-    const updateTime = new dayjs();
+    var updateTime = new dayjs();
     let lastUpdate = localStorage.getItem('lastUpdate');
 
-    // check if the lastUpdate is in localstorage 
-    if (lastUpdate === null) {
-        // lastUpdate not in local storage
-        // create to workPLannerData
+    newWPD(); // reset the current workplanner data
+
+    // load the WPD is it exists.
+    // check lastUpdate is in localstorage, or first time viewed today 
+    if ((lastUpdate === null) ||
+        (!updateTime.isSame(dayjs(lastUpdate, TIME_FORMAT), "day"))) {
+
+        // create new  workPLannerData
         lastUpdate = updateTime.format(TIME_FORMAT)
         localStorage.setItem('lastUpdate', lastUpdate);
-        workPlannerData = newWorkPlannerData;
-    }
 
-    //  check if the updateTime and lastUpdate is _NOT_ the same   
-    lastUpdateDate = dayjs(lastUpdate, TIME_FORMAT);
-    if (!updateTime.isSame(lastUpdateDate, "day")) {
-        // reset the data in the local storage
-        workPlannerData = newWorkPlannerData;
+        //  
     } else {
-        console.log("ok now what?")
+        // localstorage.setitem("lastUpdate", updateTime.format(TIME_FORMAT);
+        console.log("ok now waht?")
     }
 
 
