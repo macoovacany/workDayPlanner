@@ -1,4 +1,6 @@
-var $$debug;
+// global variables 
+const timeSections = ['8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm'];
+const TIME_FORMAT = "YYYY-M-D HH:mm:ss";
 
 
 // *************************
@@ -11,7 +13,7 @@ var timeBlocksSection = document.querySelector("#times-blocks-section");
 // *************************
 // timer stuff
 // *************************
-TIMER_UPDATE_FREQ = 200; // checks every fifth of second if the time has changed 
+const TIMER_UPDATE_FREQ = 200; // checks every fifth of second if the time has changed .
 var timerInterval = setInterval(function() {
 
     // TODO: use the dayjs timezone extension to fix
@@ -27,8 +29,8 @@ const makeTimeBlockFormHTML = function(time) {
     // am/pm --> 24 hour
     // TODO: find the library routine to do this
     let slicePnt = time.length - 2;
-    hour = time.slice(0, slicePnt)
-    ampm = time.slice(slicePnt)
+    let hour = time.slice(0, slicePnt);
+    let ampm = time.slice(slicePnt);
     if (ampm === "pm") {
         hour = hour % 12 + 12;
     }
@@ -39,32 +41,85 @@ const makeTimeBlockFormHTML = function(time) {
 "50"></textarea>
 <button type="button" id="${time}-submit">💾</button>
 </form>`;
-}
+};
 
 const makeAllTimeBlockForms = function() {
     // this builds a single innerHTML element because I don't want to play around lots of document.createelements.
     var TimeBlocksSectionInnnerHTML = "";
-    const timeSections = ['8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm'];
     timeSections.forEach((timeElement) => {
         TimeBlocksSectionInnnerHTML = TimeBlocksSectionInnnerHTML.concat(makeTimeBlockFormHTML(timeElement));
     });
     return TimeBlocksSectionInnnerHTML;
+};
+
+
+// *************************
+// local storage manipulation
+// *************************
+
+// workPlannerData
+const newWorkPlannerData = function() {
+    timeSections.forEach((tb) => {
+        workPlannerData[tb] = "";
+        return workPlannerData;
+    });
+};
+
+const loadWorkPlannerData = function() {
+    return JSON.parse(localStorage.get("workPlannerData"));
 }
+
+const saveWorkPlannerData = function(workPlannerData) {
+    localStorage.set("workPlannerData", JSON.stringify(workPlannerData));
+}
+
+// lastUpdated
+
+
+
+
+
 
 
 // *************************
 // update the time block ui
 // *************************
 const updateTimeBlocks = function() {
+
+    // set the text in the timeblock
+    const updateTime = new dayjs();
+    let lastUpdate = localStorage.getItem('lastUpdate');
+
+    // check if the lastUpdate is in localstorage 
+    if (lastUpdate === null) {
+        // lastUpdate not in local storage
+        // create to workPLannerData
+        lastUpdate = updateTime.format(TIME_FORMAT)
+        localStorage.setItem('lastUpdate', lastUpdate);
+        workPlannerData = newWorkPlannerData;
+    }
+
+    //  check if the updateTime and lastUpdate is _NOT_ the same   
+    lastUpdateDate = dayjs(lastUpdate, TIME_FORMAT);
+    if (!updateTime.isSame(lastUpdateDate, "day")) {
+        // reset the data in the local storage
+        workPlannerData = newWorkPlannerData;
+    } else {
+        console.log("ok now what?")
+    }
+
+
+
+
     timeBlocksSection.childNodes.forEach((f) => {
 
         let txtar = f.querySelector("textarea");
 
-        if (f.dataset.hour == dayjs().$d.getHours()) {
+        if (f.dataset.hour == updateTime.$d.getHours()) {
             // present
             txtar.style.backgroundColor = "var(--present)";
 
-        } else if (f.dataset.hour < dayjs().$d.getHours()) {
+        } else if (f.dataset.hour < updateTime.$d.getHours()) {
             // show as past and lock
             f.dataset.status = "locked";
             txtar.style.backgroundColor = "var(--past)";
@@ -74,18 +129,35 @@ const updateTimeBlocks = function() {
             // use the default values for in the future timeblock
         }
     });
-}
+};
+
+
 
 // *************************
 // event listeners
 // *************************
-
+var tgt;
 timeBlocksSection.addEventListener("click", (e) => {
-    // if (e.target && e.target.nodeName==="button") 
-    console.log(e.target.nodeName);
-})
+    tgt = e.target;
+    if (e.target && e.target.nodeName == "BUTTON") {
+        tgt = e.target;
+        let updateHour = tgt.id.split('-')[0];
+        let updateTextarea = document.getElementById(`${updateHour}-text`);
+        let updateText = updateTextarea.value;
+        console.log(updateText);
+
+    }
+});
+
+
 
 
 //  generate initial html format
 timeBlocksSection.innerHTML = makeAllTimeBlockForms();
+
 updateTimeBlocks();
+
+// run check if the web page time has run over to the next block
+document.addEventListener("focus", updateTimeBlocks);
+
+// end
