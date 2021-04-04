@@ -46,10 +46,6 @@ main {
 }
 
 .time-blocks-form button {
-    /* background-color: none;
-    height: 100%;
-    min-width: 10%;
-    float: right; */
     background-color: transparent;
     border: none;
     color: white;

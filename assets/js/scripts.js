@@ -2,6 +2,10 @@
 const timeSections = ['8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm'];
 const TIME_FORMAT = "YYYY-M-D HH:mm:ss";
 
+BUTTON_NONE = "";
+BUTTON_LOCKED = "🔒";
+BUTTON_SAVE = "💾";
+
 // *************************
 // localstorage ket
 //  
@@ -46,7 +50,7 @@ const makeTimeBlockFormHTML = function(time) {
 <label for="${time}-text"> ${time} </label>
 <textarea form="${time}-form" id="${time}-text" name="${time}-text" rows="3" cols=
 "50"></textarea>
-<button type="button" id="${time}-submit">💾</button>
+<button type="button" id="${time}-submit"></button>
 </form>`;
 };
 
@@ -81,7 +85,7 @@ const loadWPD = function() {
     };
 }
 
-const saveWPD = function() {
+const saveAllWPD = function() {
     // use a local object for storage
     var wpd = {};
     wpd['date'] = dayjs().format(TIME_FORMAT);
@@ -93,6 +97,18 @@ const saveWPD = function() {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(wpd));
 }
+
+
+const saveUpdateWPD = function(tb) {
+    let wpd = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    wpd['date'] = dayjs().format(TIME_FORMAT);
+
+    let txtar = document.getElementById(`${tb}-text`);
+    wpd[tb] = txtar.value;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(wpd));
+}
+
+
 
 const newWPD = function() {
     var wpd = {};
@@ -118,16 +134,19 @@ const updateTimeBlocks = function() {
     timeBlocksSection.childNodes.forEach((f) => {
 
         let txtar = f.querySelector("textarea");
+        let but = f.querySelector("button");
 
         if (f.dataset.hour == updateTime.$d.getHours()) {
             // present
             txtar.style.backgroundColor = "var(--present)";
+            but.innerText = BUTTON_NONE;
 
         } else if (f.dataset.hour < updateTime.$d.getHours()) {
             // show as past and lock
             f.dataset.status = "locked";
             txtar.style.backgroundColor = "var(--past)";
             txtar.readOnly = true;
+            but.innerText = BUTTON_LOCKED;
 
         } else {
             // use the default values for in the future timeblock
@@ -140,19 +159,33 @@ const updateTimeBlocks = function() {
 // *************************
 // event listeners
 // *************************
-var tgt;
-timeBlocksSection.addEventListener("click", (e) => {
-    tgt = e.target;
-    if (e.target && e.target.nodeName == "BUTTON") {
-        tgt = e.target;
-        let updateHour = tgt.id.split('-')[0];
-        let updateTextarea = document.getElementById(`${updateHour}-text`);
-        let updateText = updateTextarea.value;
-        console.log(updateText);
 
+// 
+timeBlocksSection.addEventListener("click", (e) => {
+
+    let tgt = e.target;
+    let updateHour = tgt.id.split('-')[0];
+
+    switch (tgt.nodeName) {
+        // update the button text depending on if a text area has focus
+        case "TEXTAREA":
+            // TODO: add an event listener for when the textare is changed:
+            // FORNOW: just change the button to indicate save
+            let button = document.getElementById(`${updateHour}-submit`)
+            if (button.innerText === BUTTON_NONE) {
+                button.innerText = BUTTON_SAVE;
+            };
+            // else the button is "locked"
+            break
+
+        case "BUTTON":
+            if (tgt.innerText === BUTTON_SAVE) {
+                saveUpdateWPD(updateHour);
+                tgt.innerText = BUTTON_NONE;
+            }
+            break;
     }
 });
-
 
 
 
