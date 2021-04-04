@@ -1,13 +1,20 @@
 // global variables 
 const timeSections = ['8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm'];
 const TIME_FORMAT = "YYYY-M-D HH:mm:ss";
-var workPlannerData = {};
+
+// *************************
+// localstorage ket
+//  
+// *************************
+STORAGE_KEY = "workPlannerData";
+
 
 // *************************
 // html entities to reference
 // *************************
 const timeDisplay = document.querySelector("#time-display");
 var timeBlocksSection = document.querySelector("#times-blocks-section");
+
 
 
 // *************************
@@ -56,60 +63,56 @@ const makeAllTimeBlockForms = function() {
 // *************************
 // local storage manipulation
 // *************************
-
-// workPlannerData
-const newWPD = function() {
-    timeSections.forEach((tb) => {
-        workPlannerData[tb] = "";
-    });
-};
-
+// text area data <-> localstorage.workPlannerData
 const loadWPD = function() {
-    workPlannerData = JSON.parse(localStorage.get("workPlannerData"));
+
+    let wpd = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+    // default empty work planner data if not already in storage.
+    if (wpd === null) {
+        newWPD();
+    } else {
+
+        // update the html elements to have the correct data    
+        timeSections.forEach((tb) => {
+            let txtar = document.getElementById(`${tb}-text`);
+            txtar.value = wpd[tb];
+        })
+    };
 }
 
 const saveWPD = function() {
-    localStorage.set("workPlannerData", JSON.stringify(workPlannerData));
-}
+    // use a local object for storage
+    var wpd = {};
+    wpd['date'] = dayjs().format(TIME_FORMAT);
 
-
-// add textarea data to a specific workPlannerData 
-const updateWPDfromHTML = function() {
     timeSections.forEach((tb) => {
         let txtar = document.getElementById(`${tb}-text`);
-        workPlannerData[tb] = txtar.value;
+        wpd[tb] = txtar.value;
     });
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(wpd));
 }
 
+const newWPD = function() {
+    var wpd = {};
+    wpd['date'] = dayjs().format(TIME_FORMAT);
+
+    timeSections.forEach((tb) => {
+        wpd[tb] = "";
+    });
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(wpd));
+}
 
 
 // *************************
 // update the time block ui
 // *************************
 const updateTimeBlocks = function() {
+    loadWPD()
 
-    // set the text in the timeblock
-    var updateTime = new dayjs();
-    let lastUpdate = localStorage.getItem('lastUpdate');
-
-    newWPD(); // reset the current workplanner data
-
-    // load the WPD is it exists.
-    // check lastUpdate is in localstorage, or first time viewed today 
-    if ((lastUpdate === null) ||
-        (!updateTime.isSame(dayjs(lastUpdate, TIME_FORMAT), "day"))) {
-
-        // create new  workPLannerData
-        lastUpdate = updateTime.format(TIME_FORMAT)
-        localStorage.setItem('lastUpdate', lastUpdate);
-
-        //  
-    } else {
-        // localstorage.setitem("lastUpdate", updateTime.format(TIME_FORMAT);
-        console.log("ok now waht?")
-    }
-
-
+    updateTime = new dayjs();
 
 
     timeBlocksSection.childNodes.forEach((f) => {
@@ -159,6 +162,9 @@ timeBlocksSection.innerHTML = makeAllTimeBlockForms();
 updateTimeBlocks();
 
 // run check if the web page time has run over to the next block
-document.addEventListener("focus", updateTimeBlocks);
+document.addEventListener("focus", () => {
+    // check we have data in storage
+    updateTimeBlocks;
+});
 
 // end
