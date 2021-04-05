@@ -1,5 +1,13 @@
 // global variables 
+
+// day shift
 const timeSections = ['8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm'];
+
+// night shift
+// note: swapping shifts means resetting the local storage  
+//  TODO: handle midnght cross-over data
+// const timeSections = ['8pm', '9pm', '10pm', '11pm', '12am', '1am', '2am', '3am', '4am', '5am'];
+
 const TIME_FORMAT = "YYYY-M-D HH:mm:ss";
 
 BUTTON_NONE = "";
@@ -7,9 +15,7 @@ BUTTON_LOCKED = "🔒";
 BUTTON_SAVE = "💾";
 
 // *************************
-// localstorage ket
-//  
-// *************************
+// localstorage key
 STORAGE_KEY = "workPlannerData";
 
 
@@ -46,12 +52,13 @@ const makeTimeBlockFormHTML = function(time) {
         hour = hour % 12 + 12;
     }
 
-    return `<form  data-status="unlocked"  data-hour="${hour}" class="time-blocks-form" id="${time}-form">
-<label for="${time}-text"> ${time} </label>
-<textarea form="${time}-form" id="${time}-text" name="${time}-text" rows="3" cols=
-"50"></textarea>
-<button type="button" id="${time}-submit"></button>
-</form>`;
+
+    // TODO: REMOVE THE CSS FROM THE TEMPLATE!!!
+    return `<form  data-status="unlocked"  data-hour="${hour}" class="time-blocks-form grid grid-cols-6 gap-0" id="${time}-form">
+    <label for="${time}-text" class="col-start-1 col-span-1"> ${time} </label>
+    <textarea form="${time}-form" id="${time}-text" name="${time}-text" rows="3" cols="50" class="col-start-2 col-span-4"></textarea>
+    <button type="button" id="${time}-submit" class="col-start-6 col-span-1"></button>
+    </form>`;
 };
 
 const makeAllTimeBlockForms = function() {
@@ -76,7 +83,6 @@ const loadWPD = function() {
     if (wpd === null) {
         newWPD();
     } else {
-
         // update the html elements to have the correct data    
         timeSections.forEach((tb) => {
             let txtar = document.getElementById(`${tb}-text`);
@@ -126,10 +132,16 @@ const newWPD = function() {
 // update the time block ui
 // *************************
 const updateTimeBlocks = function() {
-    loadWPD()
 
     updateTime = new dayjs();
+    loadWPD()
 
+    // new day?
+    let lastDate = dayjs(JSON.parse(localStorage.getItem(STORAGE_KEY))['date'], TIME_FORMAT);
+
+    if (!updateTime.isSame(lastDate, "day")) {
+        newWPD();
+    }
 
     timeBlocksSection.childNodes.forEach((f) => {
 

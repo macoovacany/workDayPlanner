@@ -24,23 +24,30 @@ header h1 {
 /* main */
 
 main {
-    max-width: 600px;
-    align-self: auto;
+    display: flex;
+    justify-content: center;
 }
 
+#time-blocks-section {}
+
 .time-blocks-form {
+    vertical-align: top;
     border-style: solid;
     border-width: 0.1em;
     border-radius: 15px;
     height: 50px;
 }
 
+.time-blocks-form label {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    text-align: right;
+}
+
 .time-blocks-form textarea {
     background-color: var(--future);
     color: rebeccapurple;
     height: 100%;
-    vertical-align: top;
-    width: 70%;
     font-family: 'Times New Roman', Times, serif;
     resize: none;
 }
@@ -49,12 +56,9 @@ main {
     background-color: transparent;
     border: none;
     color: white;
-    padding: 15px 32px;
     text-align: right;
     text-decoration: none;
     display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
+    text-align: center;
     cursor: pointer;
-    /* float:right;n */
 }
